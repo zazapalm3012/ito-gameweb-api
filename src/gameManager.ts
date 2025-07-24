@@ -69,28 +69,44 @@ class GameManager {
 
     // ผู้เล่นเข้าร่วมเกม
     joinGame(gameId: GameId, playerId: PlayerId, playerName: string): GameState | null {
+        console.log(`[GameManager.joinGame DEBUG] 🟥🟥🟥 Player ${playerName} (${playerId}) is CALLING joinGame for game ${gameId} 🟥🟥🟥`); // **เพิ่ม LOG นี้**
+    
         const game = this.activeGames.get(gameId);
         if (!game) {
-            console.warn(`Attempted to join non-existent game: ${gameId}`);
+            console.warn(`[GameManager.joinGame DEBUG] Game ${gameId} not found in activeGames map. Returning null.`);
             return null;
         }
-        if (game.roundState !== 'Lobby' || game.players.length >= game.maxPlayers) {
-            console.warn(`Cannot join game ${gameId}: status ${game.roundState}, players ${game.players.length}/${game.maxPlayers}`);
-            return null; // เกมไม่พร้อมให้เข้าร่วม หรือ ห้องเต็ม
+    
+        // เพิ่ม Log ตรวจสอบเงื่อนไขก่อนเข้าร่วม
+        console.log(`[GameManager.joinGame DEBUG] Game ${gameId} current roundState: ${game.roundState}, players count: ${game.players.length}/${game.maxPlayers}`);
+        if (game.roundState !== 'Lobby') {
+            console.warn(`[GameManager.joinGame DEBUG] Game ${gameId} is not in Lobby state (${game.roundState}). Cannot join.`);
+            return null;
         }
-
+        if (game.players.length >= game.maxPlayers) {
+            console.warn(`[GameManager.joinGame DEBUG] Game ${gameId} is full (${game.players.length}/${game.maxPlayers}). Cannot join.`);
+            return null;
+        }
+    
         const newPlayer = new Player(playerId, playerName);
-        if (game.addPlayer(newPlayer)) {
-            console.log(`Player ${playerName} (${playerId}) joined game ${gameId}`);
-            this.broadcastGameState(gameId, game); // อัปเดตสถานะเกมไปยังผู้เล่นในเกมนั้น
-            this.broadcastLobbyUpdate({ // แจ้ง Lobby Clients ว่ามีผู้เล่นเข้าร่วม (เพื่ออัปเดตจำนวนผู้เล่น)
+        const playerAdded = game.addPlayer(newPlayer); // <--- นี่คือจุดที่เรียก GameState.addPlayer
+    
+        console.log(`[GameManager.joinGame DEBUG] Result of game.addPlayer(${newPlayer.id}) for game ${gameId}: ${playerAdded}`); // **เพิ่ม LOG นี้**
+    
+        if (playerAdded) {
+            console.log(`[GameManager.joinGame DEBUG] Player ${playerName} (${playerId}) successfully added (via HTTP join) to game ${gameId}. Broadcasting state.`);
+            // ตรงนี้ `game` คือ GameState instance ที่อัปเดตแล้ว
+            this.broadcastGameState(gameId, game);
+            this.broadcastLobbyUpdate({
                 type: ServerMessageType.PLAYER_JOINED,
                 gameId: gameId,
                 player: newPlayer
             });
             return game;
+        } else {
+            console.warn(`[GameManager.joinGame DEBUG] Player ${playerName} (${playerId}) could NOT be added to game ${gameId} by GameState.addPlayer. Returning null.`);
+            return null;
         }
-        return null;
     }
 
     // ลบเกม (เมื่อไม่มีผู้เล่นเหลืออยู่)

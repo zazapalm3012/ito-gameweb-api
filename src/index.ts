@@ -167,11 +167,11 @@ app.get(
     }
 
     // (Optional) ตรวจสอบว่าผู้เล่นคนนี้อยู่ในเกมจริงหรือไม่ (ควรจะเข้าร่วมผ่าน HTTP มาแล้ว)
-    // if (!game.players.some(p => p.id === playerId)) {
-    //     console.error(`WebSocket connection failed: Player ${playerId} not in game ${gameId}.`);
-    //     // FIX: Throw an error instead of returning null
-    //     throw new Error(`Player ${playerId} not in game ${gameId}.`);
-    // }
+    if (!game.players.some(p => p.id === playerId)) {
+        console.error(`WebSocket connection failed: Player ${playerId} not in game ${gameId}.`);
+        // FIX: Throw an error instead of returning null
+        throw new Error(`Player ${playerId} not in game ${gameId}.`);
+    }
 
     return {
       onOpen(event, ws) {

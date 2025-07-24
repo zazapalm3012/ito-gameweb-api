@@ -42,16 +42,34 @@ export class GameState implements IGameState {
         this.roundState = 'Lobby';
     }
 
-    // เพิ่มผู้เล่นเข้าเกม
-    addPlayer(player: Player): boolean {
+    addPlayer(newPlayer: Player): boolean {
+        console.log(`[GameState.addPlayer DEBUG] Attempting to add player: ${newPlayer.name} (${newPlayer.id}) to game ${this.id}`);
+        console.log(`[GameState.addPlayer DEBUG] Current players BEFORE add:`, this.players.map(p => p.id));
+
+
+        // 1. Check if player already exists
+        const existingPlayer = this.players.find(p => p.id === newPlayer.id);
+        if (existingPlayer) {
+            console.warn(`[GameState.addPlayer DEBUG] Player ${newPlayer.id} already exists in game ${this.id}. Not adding duplicate.`);
+            // Update existing player's name in case they reconnected with a different name
+            existingPlayer.name = newPlayer.name;
+            // You might return true here if re-adding/reconnecting is considered "success"
+            // Or return false if you strictly mean "added a NEW player".
+            // For now, let's assume if they exist, we don't count it as a "new add" for the `if` condition in joinGame.
+            return false; // Crucial: Returning false here means gameManager.joinGame() will return null
+        }
+
+        // 2. Check if game is full
         if (this.players.length >= this.maxPlayers) {
-            return false; // ห้องเต็ม
+            console.warn(`[GameState.addPlayer DEBUG] Game ${this.id} is full (${this.players.length}/${this.maxPlayers}). Cannot add player ${newPlayer.name}.`);
+            return false; // Game is full, cannot add
         }
-        if (this.players.find(p => p.id === player.id)) {
-            return false; // ผู้เล่นคนนี้อยู่ในเกมอยู่แล้ว
-        }
-        this.players.push(player);
-        return true;
+
+        // 3. If all checks pass, add the player
+        this.players.push(newPlayer);
+        console.log(`[GameState.addPlayer DEBUG] Successfully added player ${newPlayer.name} (${newPlayer.id}) to game ${this.id}.`);
+        console.log(`[GameState.addPlayer DEBUG] Current players AFTER add:`, this.players.map(p => p.id));
+        return true; // Successfully added a new player
     }
 
     // ลบผู้เล่นออกจากเกม
