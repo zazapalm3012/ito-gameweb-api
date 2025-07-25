@@ -28,6 +28,7 @@ export interface GameState {
     teamLivesRemaining: number; // Shared lives for the team
     roundState: 'Lobby' | 'Playing' | 'RoundEnd' | 'GameEnd'; // Current phase of the game
     maxPlayers: number;
+    currentTopic: string;
 }
 
 // --- Client -> Server WebSocket Messages ---
@@ -37,6 +38,7 @@ export enum ClientMessageType {
     GUESS_TOPIC = 'GUESS_TOPIC', // If you add a "guess the topic" feature
     START_GAME = 'START_GAME', // If client (host) can trigger game start via WS
     NEXT_ROUND = 'NEXT_ROUND', // If client (host) can trigger next round via WS
+    CHANGE_TOPIC = 'CHANGE_TOPIC',
 }
 
 // Interface for a player playing a card
@@ -100,4 +102,9 @@ export interface CardPlayedValidationMessage {
     isCorrectPlay: boolean; // True if the play was valid (no lives lost for this specific play)
     livesLost: number; // How many lives were lost (0 or 1 for a single play error)
     message?: string; // Explanatory message for the result
+}
+
+export interface ChangeTopicMessage {
+    type: ClientMessageType.CHANGE_TOPIC;
+    topic: string;
 }

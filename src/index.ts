@@ -4,7 +4,7 @@ import { serve } from 'bun'; // ไม่ได้ใช้ serve ตรงๆ �
 import { createBunWebSocket } from 'hono/bun';
 import type { ServerWebSocket } from 'bun'; // Type ของ WebSocket ของ Bun
 import { gameManager } from './gameManager'; // Import GameManager
-import { ClientMessageType, ServerMessageType, PlayCardMessage } from './types';
+import { ClientMessageType, ServerMessageType, PlayCardMessage, ChangeTopicMessage } from './types';
 
 import { cors } from 'hono/cors'; // Import CORS middleware
 
@@ -202,10 +202,18 @@ app.get(
                 playCardMsg.cardValue
               );
               break;
-            case ClientMessageType.GUESS_TOPIC:
-              // หากมีการเพิ่มฟีเจอร์เดา Topic ในอนาคต
-              // gameManager.guessTopic(gameId, playerId, message.guessValue);
-              break;
+            case ClientMessageType.CHANGE_TOPIC:
+                const changeTopicMsg = message as ChangeTopicMessage;
+                // ส่งสถานะเกมปัจจุบันไปให้ผู้เล่นที่เพิ่งเชื่อมต่อ
+                const currentGameState = gameManager.getGame(gameId);
+                if (currentGameState) {
+                  gameManager.changeGameTopic(gameId, playerId, changeTopicMsg.topic);
+                  gameManager.sendToPlayer(playerId, gameId, {
+                      type: ServerMessageType.GAME_STATE_UPDATE,
+                      payload: currentGameState
+                  });
+                }
+                break;
             default:
               console.warn(`Unknown message type received from ${playerId}: ${type}`);
               gameManager.sendToPlayer(playerId, gameId, {

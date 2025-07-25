@@ -323,6 +323,26 @@ class GameManager {
             }
         }
     }
+    changeGameTopic(gameId: GameId, playerId: PlayerId, topic: string): boolean {
+        const game = this.activeGames.get(gameId);
+        if (!game || game.hostId !== playerId) {
+            console.warn(`Player ${playerId} is not host of game ${gameId} or game not found. Cannot change topic.`);
+            return false;
+        }
+
+        if (game.roundState !== 'Lobby') { // อนุญาตให้เปลี่ยนเฉพาะใน Lobby
+            console.warn(`Cannot change topic while game ${gameId} is in state: ${game.roundState}.`);
+            return false;
+        }
+
+        if (game.setTopic(topic)) {
+            console.log(`Game ${gameId} topic changed to: ${topic}`);
+            this.broadcastGameState(gameId, game); // Broadcast การเปลี่ยนแปลง
+            return true;
+        }
+        console.warn(`Failed to set topic ${topic} for game ${gameId}. Topic not found or invalid.`);
+        return false;
+    }
 }
 
 export const gameManager = GameManager.getInstance(); // Export instance เดียว

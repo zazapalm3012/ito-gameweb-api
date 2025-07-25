@@ -25,6 +25,7 @@ export class GameState implements IGameState {
     teamLivesRemaining: number; // จำนวนพลังชีวิตที่เหลือของทีม
     roundState: 'Lobby' | 'Playing' | 'RoundEnd' | 'GameEnd'; // สถานะของรอบ/เกม
     maxPlayers: number;
+    currentTopic: string;
 
     constructor(id: GameId, name: string, hostId: PlayerId, maxPlayers: number = 4, initialTeamLives: number = 2) {
         this.id = id;
@@ -40,8 +41,12 @@ export class GameState implements IGameState {
         this.lastPlayedCard = 0; // ค่าเริ่มต้นของไพ่ที่เล่นล่าสุด (ไพ่จริงจะเริ่มที่ 1)
         this.teamLivesRemaining = initialTeamLives; // กำหนดพลังชีวิตเริ่มต้นของทีม
         this.roundState = 'Lobby';
+        this.currentTopic = '';
     }
-
+    setTopic(topic: string): boolean {
+        this.currentTopic = topic;
+        return true
+    }
     addPlayer(newPlayer: Player): boolean {
         console.log(`[GameState.addPlayer DEBUG] Attempting to add player: ${newPlayer.name} (${newPlayer.id}) to game ${this.id}`);
         console.log(`[GameState.addPlayer DEBUG] Current players BEFORE add:`, this.players.map(p => p.id));
