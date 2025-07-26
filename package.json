@@ -1,6 +1,7 @@
 {
   "name": "ito-gameweb-api",
   "scripts": {
+    "start": "bun run src/index.ts",
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
