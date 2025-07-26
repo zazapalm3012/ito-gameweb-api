@@ -15,7 +15,7 @@ const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>(); /
 app.use(
   '/*', // ใช้กับทุกเส้นทาง
   cors({
-    origin: 'http://localhost:3000', // URL ของ Next.js Frontend ของคุณ
+    origin: '*', 
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['POST', 'GET', 'DELETE'],
     exposeHeaders: ['Content-Length'],

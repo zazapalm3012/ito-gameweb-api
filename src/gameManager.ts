@@ -282,12 +282,11 @@ class GameManager {
             const messageString = JSON.stringify(message);
 
             gameConnections.forEach((ws, playerId) => {
-                // FIX: Use WebSocket.OPEN instead of ws.OPEN
                 if (ws.readyState === WebSocket.OPEN) {
                     ws.send(messageString);
                 } else {
                     console.warn(`WS for player ${playerId} in game ${gameId} not open. Removing.`);
-                    gameConnections.delete(playerId); // ลบ connection ที่เสีย
+                    gameConnections.delete(playerId);
                 }
             });
         }
