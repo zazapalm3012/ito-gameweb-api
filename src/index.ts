@@ -176,7 +176,7 @@ app.get(
     return {
       onOpen(event, ws) {
         console.log(`WS opened for player ${playerName} (${playerId}) in game ${gameId}`);
-        gameManager.registerWebSocket(playerId, gameId, ws); // ลงทะเบียน WS Connection
+        gameManager.registerWebSocket(playerId, gameId, ws as any); // ลงทะเบียน WS Connection
 
         // ส่งสถานะเกมปัจจุบันไปให้ผู้เล่นที่เพิ่งเชื่อมต่อ
         const currentGameState = gameManager.getGame(gameId);
@@ -257,7 +257,7 @@ app.get(
         return {
             onOpen(event, ws) {
                 console.log(`Lobby WS opened for client ${clientId}`);
-                gameManager.registerLobbyClient(clientId, ws as ServerWebSocket);
+                gameManager.registerLobbyClient(clientId, ws as any);
                 // ส่งรายชื่อเกมปัจจุบันไปให้ client ที่เพิ่งเชื่อมต่อ
                 gameManager.sendToPlayer(clientId, "lobby-context", { // ใช้ "lobby-context" เป็น GameId จำลอง
                     type: ServerMessageType.GAME_STATE_UPDATE, // ใช้ type นี้เพื่อส่ง payload เป็น array ของ GameState

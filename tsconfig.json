@@ -1,7 +1,17 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
-  }
+    "target": "ESNext", // คอมไพล์เป็น JavaScript เวอร์ชันล่าสุด
+    "module": "ESNext", // ใช้ ES Modules
+    "moduleResolution": "bundler", // หรือ "node" ถ้ามีปัญหาเรื่องการ resolve module
+    "strict": true, // เปิดใช้งานโหมด strict type-checking ทั้งหมด
+    "esModuleInterop": true, // อนุญาต import default จาก CommonJS modules
+    "skipLibCheck": true, // ข้ามการตรวจสอบ type ของไฟล์ lib เพื่อความเร็ว
+    "forceConsistentCasingInFileNames": true, // บังคับให้ชื่อไฟล์และ import มี casing ตรงกัน
+    "outDir": "./dist", // โฟลเดอร์สำหรับ output JavaScript files
+    "rootDir": "./src", // โฟลเดอร์สำหรับ source TypeScript files
+    "jsx": "react-jsx", // บอก TypeScript ว่าให้แปลง JSX เป็น React.createElement (หรือ equivalent)
+    "jsxImportSource": "hono/jsx" // บอก TypeScript ว่าให้ใช้ hono/jsx เป็น runtime สำหรับ JSX
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"], // รวมไฟล์ .ts และ .tsx ใน src/
+  "exclude": ["node_modules", "dist"] // ไม่รวมโฟลเดอร์เหล่านี้ในการคอมไพล์
 }
